@@ -6,3 +6,4 @@ Basic things documentation
    :maxdepth: 2
 
    /src/python/index.rst
+   /src/c++/index.rst
