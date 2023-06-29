@@ -1,4 +1,4 @@
-Python documentation
+C++ documentation
 ====================
 
 .. toctree::

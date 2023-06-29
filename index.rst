@@ -2,7 +2,7 @@ Basic things documentation
 ==========================
 
 .. toctree::
-   :caption: Python
+   :caption: References
    :maxdepth: 2
 
    /src/python/index.rst
