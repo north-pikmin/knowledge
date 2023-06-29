@@ -1,0 +1,12 @@
+sphinx
+sphinx-copybutton
+sphinx-last-updated-by-git
+sphinx-view
+sphinx_inline_tabs
+sphinxcontrib.bibtex
+sphinxcontrib.mermaid
+sphinx-autobuild
+sphinx_git
+sphinx_design
+pydata-sphinx-theme
+wheel
