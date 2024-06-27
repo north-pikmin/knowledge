@@ -16,12 +16,12 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Knowledge VMCG'
-html_title = 'Knowledge VMCG'
+project = 'Knowledge'
+html_title = 'Knowledge'
 # html_title = 'Python LDC Training'
 # project = 'Python & Git for SIEE -- 2022'
 # copyright = '2021, Luis'
-author = 'Charles-Auguste Gourio --  Victor Marcelin'
+author = 'North Pikmin members'
 
 # The short X.Y version
 # version = '21-04-05'
@@ -79,8 +79,7 @@ html_static_path = ['_static']
 
 # -- Options for LaTeX output --------------------------------
 # title = "Python trainning for LDC \\newline\\newline\\large Some subtitle possible here"
-title = "Python trainning for LDC"
-title = "Data Services Setup"
+title = "Knowledge"
 
 # latex_theme = 'manual'  # 'manual' to make a book, 'howto' to make an article
 # latex_documents = [('ldc_index', 'mazars_ldc_python.tex', title, author, 'howto')]
