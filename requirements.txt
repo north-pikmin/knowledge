@@ -6,7 +6,7 @@ sphinx_inline_tabs
 sphinxcontrib.bibtex
 sphinxcontrib.mermaid
 sphinx-autobuild
-sphinx_git
+sphinx-git
 sphinx_design
 pydata-sphinx-theme
 wheel
