@@ -8,5 +8,5 @@ sphinx-autobuild
 sphinx-git
 sphinx_design
 pydata-sphinx-theme
-sphinx
+sphinx==7.4.6
 wheel
