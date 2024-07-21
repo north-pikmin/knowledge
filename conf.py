@@ -82,10 +82,10 @@ html_static_path = ['_static']
 title = "Knowledge"
 
 # latex_theme = 'manual'  # 'manual' to make a book, 'howto' to make an article
-# latex_documents = [('ldc_index', 'mazars_ldc_python.tex', title, author, 'howto')]
-latex_documents = [('index', 'mazars_ldc_python.tex', title, author, 'howto')]
+# latex_documents = [('ldc_index', 'ldc_python.tex', title, author, 'howto')]
+latex_documents = [('index', 'ldc_python.tex', title, author, 'howto')]
 latex_engine = 'xelatex'
-latex_logo = './_static/logo_mazars.png'
+latex_logo = './_static/logo.png'
 
 latex_elements = {
   'papersize': 'a4paper',  # 'letterpaper' or 'a4paper'
