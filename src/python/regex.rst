@@ -160,10 +160,206 @@ Some implementations use both: if the regex doesn't use any lookbacks etc, then 
 3. Regex syntax and applications in Python
 ------------------------------------------
 
-This part aims to progressively build more and more complex regex expressions by starting from the very basics, all the while introducing the different functions of the re package.
+This part aims to progressively build more and more complex regex expressions by starting from the very basics, all the while introducing the different functions of the re package (which will come quickly after we have learned some basics in regex).
 By following the examples in here step by step, you should by the end have a pretty good knowlegde of regex syntax, enough to be able to implement your own!
 
 Having said that, let's get started with some basics.
 
+A regular expression, as we have seen from the previous examples, contains a number of characters, which can be split up into two categories:
+
+    - Basic characters: these are characters which can be interpreted as such by the regex engine. For example, in my regex, when I write `a`, that is to actually match the letter "a"
+    - Special characters: These include \*, +, [] etc, and are not interpreted as such by the regex engine
 
 
+Before diving into some examples, let's give some explanations on the most common special characters: \*, +, . and []
+
+.. tab:: \* 
+
+    \* is by far one of the most common regex special characters. It is signifies that the character written before is to be repeated zero or 
+    more times. 
+    
+    For example, the regex expression `a*` matches either the empty string (""), or a string composed only of the letter "a" any number of times
+    ("a", "aa", "aaaa" etc).
+
+
+.. tab:: +
+
+    + is very similar to \*, except that you do not want to include the empty string in the possible matches. To take the same example as the \* special
+    character, the regex expression `a+` will match any string composed only of the letter "a", the null string not included ("a", "aa", "aaaa" etc).
+
+
+.. tab:: .
+
+    . is a special character representing any character except from the \n (newline). The regex `.` therefore matches any one letter string.
+
+.. tab:: []
+
+    [] is called a character class. It is a set of character to match at a certain place. A basic example would be: `[abc]`. This matches the strings "a", "b" or "c".
+    You can also specify a range of characters in a character class. For example, `[a-z]` matches all the lowercase letters in the alphabet, `[0-9]` matches any digits and
+    `[a-zA-Z0-9_]` matches all string composed of digits and letters, may they be lowercase or uppercase. You can also negate a character class using ^: `[^a]` will match
+    all single letter strings except from "a".
+
+
+Having said that, let's give some very basic examples on how to use all of this together. You can try solving these little problems on your own before looking 
+at the way I have done.
+
+Suppose we want to do the following:
+
+.. code::
+
+    Write a regex matching any word containing only "a" and "b", allowing the empty word. 
+
+
+To do this, we could write the following:
+
+.. code::
+
+    [ab]*
+
+
+
+The star applies to the entire character class. Pretty basic stuff for now :).
+
+Let's do the following:
+
+.. code::
+
+    Write a regex which matches all strings starting with "a", and then having one or more "b"
+
+The following could work:
+
+.. code::
+
+    ab+
+
+The + applies only to the latest character/character class, so in this case it is only "b". The same goes for \*.
+
+Let's do a few more before moving on:
+
+.. code::
+
+    Match all the strings starting with A and finishing with c, containing at least four letters
+
+My solution with what is known:
+
+.. code::
+
+    A..+c
+
+Last one for the road. 
+
+.. code::
+
+    Match all strings starting with a capital letter, ending with an s and for which all the other letters are in lowercase
+
+Solution:
+
+.. code::
+
+    [A-Z][a-z]*s
+
+Let's look at a few more special characters before diving in to some Python
+
+
+.. tab:: \\s
+
+    Pretty basic, it represents a space character.
+
+.. tab:: \\w and \\W
+
+    \\w represents all the characters in `[a-zA-Z0-9_]`. It is called a word character. \\W is the complementary of \\w
+
+.. tab:: \\b
+
+    This is a zero width representing the boundary of a word (string composed only of \\w characters).
+
+.. tab:: \\d
+
+    This matches any digits.
+
+Let's give a few more examples.
+
+.. code::
+
+    Match all the strings composed of two words
+
+Solution:
+
+.. code::
+
+    \w+\s\w+
+
+And another one:
+
+.. code::
+
+    Match strings containing at least one digit
+
+Solution
+
+.. code::
+
+    .*\d.*
+
+
+Let's now give a brief presentation of how regex can be used in the re python package.
+
+re is a package containing a lot of different useful functions. We have already seen the sub functions, but it is not the only one!
+
+
+.. tab:: re.findall
+
+    This function returns all the matches in a provided string, scanned from left to right (according to the documentation).
+
+
+.. tab:: re.search
+
+    This function returns a match anywhere in the string
+
+
+Let's give some examples of these before going deeper into regex syntax.
+
+Suppose we have the following Python string:
+
+.. code:: python
+
+    "Hello from Toulouse and Barcelona"
+
+Let's say we want to extract all the words which contain at least one "o".
+
+We would use re.findall:
+
+.. code:: python
+
+    re.findall(r"\w*o\w*", test) # returns a list of all the non overlapping matches from left to right
+    # Returns: ['Hello', 'from', 'Toulouse', 'Barcelona']
+
+
+Now if we do the same using re.search:
+
+.. code:: python
+
+    re.search(r"\w*o\w*", test).group()
+    # Returns: 'Hello'
+
+
+The search returns only the first match, and we use the group method to access the actual match.
+
+Before diving in to some actual python, let's look at some features of Perl's implementation of regex which allow 
+what we call lookahead and lookback, which are very powerful.
+
+.. tab:: Positive/Negative Regex lookahead
+
+    The positive regex lookahead allows the engine to find match certain part of string which are followed by certain charactes.
+    It is written : (?=<regex_expression>). 
+    
+    For example, `a(?=;)` will match all "a" strings which are followed by ";". 
+    
+    The negative lookahead is very similar, it is written (?!<regex_expression>). 
+    
+    For example, `a(?!;)` will match all "a" which are **not** followed by ";".
+
+    Note that the term used here in the positive/negative lookahead is an actual regex expression: we can pass any kind 
+    of regex expression (so not necessarily of fixed width, unlike the lookback).
+
+.. tab:: Positive/negative lookback
