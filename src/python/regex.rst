@@ -171,11 +171,11 @@ A regular expression, as we have seen from the previous examples, contains a num
     - Special characters: These include \*, +, [] etc, and are not interpreted as such by the regex engine
 
 
-Before diving into some examples, let's give some explanations on the most common special characters: \*, +, . and []
+Before diving into some examples, let's give some explanations on the most common special characters: \*, +, ., $, ^ and []
 
 .. tab:: \* 
 
-    \* is by far one of the most common regex special characters. It is signifies that the character written before is to be repeated zero or 
+    \* (the Kleene star) is by far one of the most common regex special characters. It is signifies that the character written before is to be repeated zero or 
     more times. 
     
     For example, the regex expression `a*` matches either the empty string (""), or a string composed only of the letter "a" any number of times
@@ -192,6 +192,14 @@ Before diving into some examples, let's give some explanations on the most commo
 
     . is a special character representing any character except from the \n (newline). The regex `.` therefore matches any one letter string.
 
+.. tab:: $
+
+    This is a character which signifies the end of the string. For example, `.*H$` would match any string ending with the letter "H".
+
+.. tab:: ^
+
+    This is a character which signifies the beginning of a string. For example, `^H.*` would match any string starting with the letter "H"
+
 .. tab:: []
 
     [] is called a character class. It is a set of character to match at a certain place. A basic example would be: `[abc]`. This matches the strings "a", "b" or "c".
@@ -200,8 +208,11 @@ Before diving into some examples, let's give some explanations on the most commo
     all single letter strings except from "a".
 
 
+**Note**: Sometimes, we may want to match an actual \* or + in our actual string. In this case, we need to escape our special character using a \\. For example, if we wanted to match
+strings composed of any number of the character "+", we would have to write `\+*`.
+
 Having said that, let's give some very basic examples on how to use all of this together. You can try solving these little problems on your own before looking 
-at the way I have done.
+at my way of doing.
 
 Suppose we want to do the following:
 
@@ -317,6 +328,11 @@ re is a package containing a lot of different useful functions. We have already 
     This function returns a match anywhere in the string
 
 
+.. tab:: re.sub
+
+    Subs the matched string with another string passed as an argument.
+
+
 Let's give some examples of these before going deeper into regex syntax.
 
 Suppose we have the following Python string:
@@ -343,23 +359,124 @@ Now if we do the same using re.search:
     # Returns: 'Hello'
 
 
+Now suppose we want to remove the Barcelona part and replace it with Paris:
+
+.. code:: python
+
+    re.sub(r"Barcelona", "Paris", test)
+    # Returns "Hello from Toulouse and Paris"
+
+
 The search returns only the first match, and we use the group method to access the actual match.
 
-Before diving in to some actual python, let's look at some features of Perl's implementation of regex which allow 
-what we call lookahead and lookback, which are very powerful.
+Before diving in to some more python, let's look at some features of Perl's implementation of regex which allow 
+what we call lookahead and lookbehind, which are very powerful. Note that these will make a lot more sense when we will
+combine them with the python functions in the re package.
 
-.. tab:: Positive/Negative Regex lookahead
+.. tab:: Positive/Negative lookahead
 
-    The positive regex lookahead allows the engine to find match certain part of string which are followed by certain charactes.
-    It is written : (?=<regex_expression>). 
+    The positive regex lookahead allows the engine to match certain part of a string which are followed by certain characters.
+    It is written : 
+    
+    .. code:: python
+
+        (?=<regex_expression>)
     
     For example, `a(?=;)` will match all "a" strings which are followed by ";". 
     
-    The negative lookahead is very similar, it is written (?!<regex_expression>). 
+    The negative lookahead is very similar, it is written:
+    
+    .. code:: python
+    
+        (?!<regex_expression>) 
     
     For example, `a(?!;)` will match all "a" which are **not** followed by ";".
 
     Note that the term used here in the positive/negative lookahead is an actual regex expression: we can pass any kind 
-    of regex expression (so not necessarily of fixed width, unlike the lookback).
+    of regex expression (so not necessarily of fixed width, unlike the lookbehind).
 
-.. tab:: Positive/negative lookback
+
+.. tab:: Positive/negative lookbehind
+
+    The positive lookbehind allows to match certain part of a string which are preceded by certain characters.
+    It is written:
+
+    .. code::
+
+        (?<=<regex_expression>)
+
+    For example, `(?<=A)b` will match all the "b" for which the previous letter was an "A".
+
+    The negative lookbehind is very similar. Here is the syntax:
+
+    .. code::
+
+        (?<!<regex_expression>)
+
+    For example, `(?<!A)b` will match all the "b" for which the previous letter was **not** an "A".
+
+    Note that unlike the regex lookahead, the regex expression in the lookbehind must be of fixed length.
+
+
+Now that we have some very solid tools for regex, let's do a few examples using Python, and a little problem to summarize a lot of what we have seen.
+
+Suppose have the following string:
+
+.. code::  python
+
+    text = "test.sas, test2.txt, test3.sas, test4.py"
+
+Our goal is to extract all the files for which the extension is ".sas" (but without the extension). To do this, we can do the following:
+
+.. code:: python
+
+    re.findall(r"[^\.,]+(?=\.sas)", text)
+
+Now suppose we want to extract all the file extensions. In our case, we can do the following:
+
+.. code:: python
+
+    re.findall(r"(?<=\.)[^\s\.]+(?=,)", text)
+
+
+Of course, if we were in the more general case, we would have to make the functions above a lot more robust, but it is still a nice example.
+
+
+Now that we are starting to have a nice understanding, let's dive into a little problem.
+
+Suppose we have the following string:
+
+.. code:: python
+
+    text = """%let a=2023; %let b=2022;/*this is the end of the variables
+     \ndefinition */ LIBNAME test \"/path/to/test\"; * test FILENAME; 
+     data test.test&a; SET test.test_file;"""
+
+This is an extract of a basic SAS code which we could want to do some parsing on. It is also very convenient to use
+in order to show some examples.
+
+Suppose we have the following goal: we want to write a Python script that extracts the absolute paths to the inputs and outputs of this SAS code.
+In this case, we have
+
+- One input, "test.test_file", which should be resolved to "path/to/test/test_file" (the part before the "." corresponds to the LIBNAME defined before, and we concatenated it with the part after the ".")
+- One output, "test.test&a", which after some basic parsing, should be resolved to "path/to/test/test2023" (&a is a reference to the variable a which was defined earlier)
+
+In order to do this, we need to perform the following tasks:
+
+1. Extract all the variables in this script and store them in a sort of dictionnary to be used later on
+2. Extract all the LIBNAMEs in the same manner
+3. Extracts the keywords associated to the inputs/outputs
+4. Recreate the actual abspaths
+
+Note that the script also contains comments, which come in two forms:
+
+- Line comments (starting with \* and ending with ;)
+- Block comments (between \\* and \*\\)
+
+Feel free to give it a go on your own!
+
+Let's start by removing the comments. Let's first start with the block comments, which are the easiest. We can do the following:
+
+.. code:: python
+
+    sas_code = re.sub(r"", "", text)
