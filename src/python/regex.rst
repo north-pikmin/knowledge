@@ -448,35 +448,101 @@ Suppose we have the following string:
 
 .. code:: python
 
-    text = """%let a=2023; %let b=2022;/*this is the end of the variables
+    text = """%let a=2023; %let b=2022 * 1;/*this is the end of the variables
      \ndefinition */ LIBNAME test \"/path/to/test\"; * test FILENAME; 
      data test.test&a; SET test.test_file;"""
 
 This is an extract of a basic SAS code which we could want to do some parsing on. It is also very convenient to use
 in order to show some examples.
 
+We will often say "SAS line". This refers to any bit of code which are contained between a ";" and another ";" or between a line start and a ";". In the example above,
+"%let a=2023;" and "%let b=2022 * 1;" are both distinct SAS lines.
+
 Suppose we have the following goal: we want to write a Python script that extracts the absolute paths to the inputs and outputs of this SAS code.
 In this case, we have
 
-- One input, "test.test_file", which should be resolved to "path/to/test/test_file" (the part before the "." corresponds to the LIBNAME defined before, and we concatenated it with the part after the ".")
-- One output, "test.test&a", which after some basic parsing, should be resolved to "path/to/test/test2023" (&a is a reference to the variable a which was defined earlier)
+- One input, "test.test_file" (which comes right after the SET), which should be resolved to "path/to/test/test_file" (the part before the "." corresponds to the LIBNAME defined before, and we concatenated it with the part after the ".")
+- One output, "test.test&a" (which comes right after the DATA), which after some basic parsing, should be resolved to "path/to/test/test2023" (&a is a reference to the variable a which was defined earlier)
 
 In order to do this, we need to perform the following tasks:
 
-1. Extract all the variables in this script and store them in a sort of dictionnary to be used later on
-2. Extract all the LIBNAMEs in the same manner
-3. Extracts the keywords associated to the inputs/outputs
+1. Extract all the variables in this script and store them in a sort of dictionnary to be used later on (variables are defined using a %let macro statement)
+2. Extract all the LIBNAMEs in the same manner (in our example, test would be the name of the LIBNAME and the /path/to/test would be the associated value)
+3. Extracts the keywords associated to the inputs/outputs (so in our case )
 4. Recreate the actual abspaths
+
+No worries, all these different tasks have an expected output each time so you can better understand what is expected
 
 Note that the script also contains comments, which come in two forms:
 
-- Line comments (starting with \* and ending with ;)
+- Line comments (\* right after a ";" or at the beginning of a new line and ending with ;). In our example, we have a line comment ("\* test filename;" needs to be removed), and an actual multiplication, which needs to be kept
 - Block comments (between \\* and \*\\)
 
 Feel free to give it a go on your own!
 
-Let's start by removing the comments. Let's first start with the block comments, which are the easiest. We can do the following:
+**0. Comments removal**
+
+Having "text" as the input, the expected output would be:
 
 .. code:: python
 
-    sas_code = re.sub(r"", "", text)
+    '%let a=2023; %let b=2022 * 1; LIBNAME test "/path/to/test"; \n     data test.test&a; SET test.test_file;'
+
+
+Let's start by removing the comments. Let's first start with the block comments, which are the easiest. 
+
+We can do the following:
+
+.. code:: python
+
+    sas_code = re.sub(r"/\*(.|\n)*\*/", "", text)
+
+For the line comments, it is a bit trickier, since the multiplication in SAS also uses the \* symbol. As said earlier, the line comments
+are identifed by \* either at the beginning of a new line or by \* right after a ";" and possibily a few whitespaces. We therefore have the following 
+rule:
+
+.. code:: python
+
+    sas_code = re.sub(r"((?<=^)|(?<=;))(\s)*\*[^;]*;", "", sas_code)
+
+
+Here, we:
+
+- Look behind to see if we are at the beginning of a new line (\^ or ;)
+- Take into account all the possible whitespaces that may come before our \*
+- Check if after all of that, we do actually have a \*
+- Extract anything that may come after until the next ;
+
+Nice! With both of these combined, we can fully remove all the comments from the code. Next, let's extract the variables, again using
+some regex. 
+
+**1. Variable extraction**
+
+Here is the expected output:
+
+.. code:: python
+
+    {'a': '2023', 'b': '2022 * 1'}
+
+
+The input would be the sas_code variable defined above.
+
+We want to extract all the SAS lines which have a %let, and then get the associated variable mapping. To do the %let SAS line
+extraction, we can use the following:
+
+.. code:: python
+
+    let_args_list = re.findall(r"(?<=%let)[^;]+(?=;)", sas_code)
+
+After, using some basic python string methods, we can get our variable mapping:
+
+.. code:: python
+
+    variable_mapping = dict()
+    for let_arg in let_args_list:
+        var_name, var_val = let_arg.strip().split("=")
+        variable_mapping[var_name.strip()] = var_val.strip()
+
+Nice! Sure, we haven't actually evaluated the value of b, but this goes out of the scope of this tutorial.
+
+Having done this
