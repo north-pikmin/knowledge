@@ -1,0 +1,852 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Regular expressions (aka RegEx) &#8212; Knowledge</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=4c969af8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/tabs.js?v=3ee01567"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'src/python/regex';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="C++ documentation" href="../c%2B%2B/index.html" />
+    <link rel="prev" title="NoSQL databases with MongoDB" href="mongodb.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Knowledge</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Python documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../c%2B%2B/index.html">
+    C++ documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Python documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../c%2B%2B/index.html">
+    C++ documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Python</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="selenium.html">WSL and Selenium for python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongodb.html">NoSQL databases with MongoDB</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Regular expressions (aka RegEx)</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Python documentation</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Regular...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="regular-expressions-aka-regex">
+<h1>Regular expressions (aka RegEx)<a class="headerlink" href="#regular-expressions-aka-regex" title="Link to this heading">#</a></h1>
+<p>Regular expressions are often feared by a lot of people because of their freaking weird syntax, which may put anyone off at first.</p>
+<p>The first time I looked at this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;((?&lt;=;)|(?&lt;=^))\s*\*[^;]*;&quot;</span>
+</pre></div>
+</div>
+<p>I thought it was an absolute nightmare. Here’s a little meme to represent better the way I felt when I started:</p>
+<p><a class="reference internal" href="../../_images/regex_meme.png"><img alt="studio3T_picture" src="../../_images/regex_meme.png" style="width: 200px;" /></a></p>
+<p>But after a little time, it all became a lot better!!</p>
+<p><strong>In this page, we will cover the following points:</strong></p>
+<ol class="arabic simple" start="0">
+<li><p>Regex cheatsheet</p></li>
+<li><p>What is a regex, where are they used and what are their limits</p></li>
+<li><p>What actually happens when you try to match a regex in a string?</p></li>
+<li><p>Regex syntax and applications in Python (re package and str methods in pandas)</p></li>
+<li><p>Exercises to test your skills!</p></li>
+</ol>
+<section id="what-is-a-regex-where-are-they-used-and-what-are-their-limits">
+<h2>1. What is a regex, where are they used and what are their limits<a class="headerlink" href="#what-is-a-regex-where-are-they-used-and-what-are-their-limits" title="Link to this heading">#</a></h2>
+<p>A regex is a sequence of characters which specify a certain pattern to match in a string. Its syntax was developped
+in 1951 and has evolved to become how it is known today. It can be used in many different programming languages, such as
+Python (with the re package for example which we will discover later).</p>
+<p>With this in mind, let’s see some of the different use cases:</p>
+<p>Suppose I have the following Series of absolute paths for some files:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 100.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>file_abspaths</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>/example/path.test/home/file1.sas</p></td>
+</tr>
+<tr class="row-odd"><td><p>/example/path.test/home/file1.py</p></td>
+</tr>
+<tr class="row-even"><td><p>/example/path.test2/home/test.sas</p></td>
+</tr>
+<tr class="row-odd"><td><p>/example/path.test2/home/thomas/test.hello.sas.what.txt</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Suppose we want to know the file extensions of all the associated files. Without regex, we could try the following method (which I find not very clean), supposing our series is called <cite>abspath_s</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">abspath_df</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>I’m not a huge fan of this solution, it is the kind of thing I used to do before using regex, and I wasn’t entirely satisfied.
+I’m not quite sure it works in any given situation either.</p>
+<p>With regex, you can actually do this in one line, and when you learn to read regex, it is a lot cleaner and quicker:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">abspath_df</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;.*\.(?=[^\.]+)&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>In this example, which remained relatively simple, we can already see that regex expressions can be a lot more powerful than simple pandas methods on str.
+Even though we can see we can still do it in Python, I personnally fail to see how we can possibily scale up the method for more complex cases.</p>
+<p>Let’s consider quickly another example I have come accross which explains a lot better just how powerful regex expressions can be (one of the first regex I have used on iSMA)</p>
+<p>Suppose I have a script I want to extract keywords from. In scripts, writers often have the possibility to comment some sections (either because a section of the code is not used
+or just because they are being nice to others to help them understand for when they’ll have to read the coder’s work).</p>
+<p>In SAS, comments come in two forms:</p>
+<ul class="simple">
+<li><p>Either it is a single line comment (after a “;”, if there is a *, then anything that comes after is a comment until the next “;”)</p></li>
+<li><p>Either it is a block comment (anything between \* and *\)</p></li>
+</ul>
+<p>I wish you luck if you want to do this without regex (I have not considered doing it using them here by the way haha)</p>
+<p>Here is what the code should do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="o">*</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">a</span>
+<span class="n">block</span> <span class="n">comment</span> <span class="o">*</span>\<span class="p">;</span> <span class="o">%</span><span class="n">let</span> <span class="n">n</span><span class="o">=</span><span class="mi">2023</span><span class="p">;</span> <span class="o">*</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">single</span> <span class="n">line</span> <span class="n">comment</span><span class="p">;</span>
+<span class="o">*</span><span class="n">Yet</span> <span class="n">another</span> <span class="n">line</span> <span class="n">comment</span><span class="p">;</span> <span class="o">%</span><span class="n">let</span> <span class="n">hello</span><span class="o">=</span><span class="s2">&quot;world&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>should be transformed into:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">let</span> <span class="n">n</span><span class="o">=</span><span class="mi">2023</span><span class="p">;</span>
+<span class="o">%</span><span class="n">let</span> <span class="n">hello</span><span class="o">=</span><span class="s2">&quot;world&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>With regex, I only had to use two lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/\*(.|\n)*?\*/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="c1"># for block line comments</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;((?&lt;=;)|(?&lt;=^))\s*\*[^;]*;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span> <span class="c1"># for single line comments comments</span>
+</pre></div>
+</div>
+<p>It works like a charm!</p>
+<p>I bet you a beer you cannot find a better solution without using regex.
+I’m open to any suggestions if you can further optimise this code by the way.</p>
+<p>Now that we have explored some personal use cases, let’s take a look at some more general ones. Regex are very widely used in:</p>
+<ul class="simple">
+<li><p>Search engines</p></li>
+<li><p>Language tokenizers used for code compilation</p></li>
+<li><p>Language linters and syntax checkers and more generally language servers (which people who use VScode should be very familiar with)</p></li>
+</ul>
+<p>Blah blah blah a lot more for sure, just some examples I find interesting.</p>
+<p><strong>Limitations</strong></p>
+<p>The only limitation of regex is that they can be quite slow. As we shall see in the next part, a regex expression is translated by a regex engine into
+a state machine to analyse strings. This process can be quite slow, so if you are doing some very basic stuff, I would still suggest to use
+basic methods, such as ones we use everyday in pandas.</p>
+</section>
+<section id="what-actually-happens-when-you-try-to-match-a-regex-in-a-string">
+<h2>2. What actually happens when you try to match a regex in a string?<a class="headerlink" href="#what-actually-happens-when-you-try-to-match-a-regex-in-a-string" title="Link to this heading">#</a></h2>
+<p>There is an old and a new algorithm to determine wether a certain regex matches a certain string (the source of this all of this is not from the top of my head, parts come from Wikipedia and some over sources, I have just
+summarized here).</p>
+<ul class="simple">
+<li><p><strong>NFA/DFA algorithm:</strong></p></li>
+</ul>
+<p>This is also the oldest implementation of the algorithm, which involves generating a finite state automaton (a machine with a finite amount of states, I can write another page all about it, just ask, but this subject quickly becomes very
+mathematical). The basic idea is to generate a machine which has different states.</p>
+<p>Let’s look at a very basic example to illustrate this point:</p>
+<div class="mermaid">
+            stateDiagram-v2
+[*] --&gt; a
+a --&gt; b
+b --&gt; b
+b --&gt; c
+c --&gt; [*]
+        </div><p>The previous diagram, which corresponds to the regex <cite>ab+c</cite>, matches any string of the form abc, abbc, abbbbbbbbbbc. The algorithm simply reads the regex, transforms it into a structure which looks much like the one above. It then takes the string, and if by starting at the starting state, we can go through each letter of the string and end up in the
+end state, then this means we have a match.</p>
+<p>It takes a lot of memory space to create such a state machine (exponential space), but is on the other hand very efficient to test if a string matches a pattern (linear)</p>
+<ul class="simple">
+<li><p><strong>Backtracking algorithms</strong></p></li>
+</ul>
+<p>This algorithm provides a lot more flexibility in regex expressions, such as lookbacks (which we will look at right after, and were introduced when regular expressions were implemented for Perl) which cannot be handled by the above algorithm. The only thing is that its running time can be exponential.
+It is this kind of algorithm which is used in Python. I won’t go too much in the details, just keep in mind that this allows to do more things with regex than then previous method</p>
+<p>Some implementations use both: if the regex doesn’t use any lookbacks etc, then the NFA/DFA is used. Otherwise, a backtracking algorithm is used.</p>
+</section>
+<section id="regex-syntax-and-applications-in-python">
+<h2>3. Regex syntax and applications in Python<a class="headerlink" href="#regex-syntax-and-applications-in-python" title="Link to this heading">#</a></h2>
+<p>This part aims to progressively build more and more complex regex expressions by starting from the very basics, all the while introducing the different functions of the re package (which will come quickly after we have learned some basics in regex).
+By following the examples in here step by step, you should by the end have a pretty good knowlegde of regex syntax, enough to be able to implement your own!</p>
+<p>Having said that, let’s get started with some basics.</p>
+<p>A regular expression, as we have seen from the previous examples, contains a number of characters, which can be split up into two categories:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Basic characters: these are characters which can be interpreted as such by the regex engine. For example, in my regex, when I write <cite>a</cite>, that is to actually match the letter “a”</p></li>
+<li><p>Special characters: These include *, +, [] etc, and are not interpreted as such by the regex engine</p></li>
+</ul>
+</div></blockquote>
+<p>Before diving into some examples, let’s give some explanations on the most common special characters: *, +, ., $, ^ and []</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">*</label><div class="tab-content docutils">
+<p>* (the Kleene star) is by far one of the most common regex special characters. It is signifies that the character written before is to be repeated zero or
+more times.</p>
+<p>For example, the regex expression <cite>a*</cite> matches either the empty string (“”), or a string composed only of the letter “a” any number of times
+(“a”, “aa”, “aaaa” etc).</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">+</label><div class="tab-content docutils">
+<ul class="simple">
+<li><p>is very similar to *, except that you do not want to include the empty string in the possible matches. To take the same example as the * special</p></li>
+</ul>
+<p>character, the regex expression <cite>a+</cite> will match any string composed only of the letter “a”, the null string not included (“a”, “aa”, “aaaa” etc).</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--3">.</label><div class="tab-content docutils">
+<p>. is a special character representing any character except from the n (newline). The regex <cite>.</cite> therefore matches any one letter string.</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--4" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--4">$</label><div class="tab-content docutils">
+<p>This is a character which signifies the end of the string. For example, <cite>.*H$</cite> would match any string ending with the letter “H”.</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--5" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--5">^</label><div class="tab-content docutils">
+<p>This is a character which signifies the beginning of a string. For example, <cite>^H.*</cite> would match any string starting with the letter “H”</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--6" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--6">[]</label><div class="tab-content docutils">
+<p>[] is called a character class. It is a set of character to match at a certain place. A basic example would be: <cite>[abc]</cite>. This matches the strings “a”, “b” or “c”.
+You can also specify a range of characters in a character class. For example, <cite>[a-z]</cite> matches all the lowercase letters in the alphabet, <cite>[0-9]</cite> matches any digits and
+<cite>[a-zA-Z0-9_]</cite> matches all string composed of digits and letters, may they be lowercase or uppercase. You can also negate a character class using ^: <cite>[^a]</cite> will match
+all single letter strings except from “a”.</p>
+</div>
+</div>
+<p><strong>Note</strong>: Sometimes, we may want to match an actual * or + in our actual string. In this case, we need to escape our special character using a \. For example, if we wanted to match
+strings composed of any number of the character “+”, we would have to write <cite>+*</cite>.</p>
+<p>Having said that, let’s give some very basic examples on how to use all of this together. You can try solving these little problems on your own before looking
+at my way of doing.</p>
+<p>Suppose we want to do the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Write</span> <span class="n">a</span> <span class="n">regex</span> <span class="n">matching</span> <span class="nb">any</span> <span class="n">word</span> <span class="n">containing</span> <span class="n">only</span> <span class="s2">&quot;a&quot;</span> <span class="ow">and</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">allowing</span> <span class="n">the</span> <span class="n">empty</span> <span class="n">word</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>To do this, we could write the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">ab</span><span class="p">]</span><span class="o">*</span>
+</pre></div>
+</div>
+<p>The star applies to the entire character class. Pretty basic stuff for now :).</p>
+<p>Let’s do the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Write</span> <span class="n">a</span> <span class="n">regex</span> <span class="n">which</span> <span class="n">matches</span> <span class="nb">all</span> <span class="n">strings</span> <span class="n">starting</span> <span class="k">with</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="ow">and</span> <span class="n">then</span> <span class="n">having</span> <span class="n">one</span> <span class="ow">or</span> <span class="n">more</span> <span class="s2">&quot;b&quot;</span>
+</pre></div>
+</div>
+<p>The following could work:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ab</span><span class="o">+</span>
+</pre></div>
+</div>
+<p>The + applies only to the latest character/character class, so in this case it is only “b”. The same goes for *.</p>
+<p>Let’s do a few more before moving on:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Match</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">strings</span> <span class="n">starting</span> <span class="k">with</span> <span class="n">A</span> <span class="ow">and</span> <span class="n">finishing</span> <span class="k">with</span> <span class="n">c</span><span class="p">,</span> <span class="n">containing</span> <span class="n">at</span> <span class="n">least</span> <span class="n">four</span> <span class="n">letters</span>
+</pre></div>
+</div>
+<p>My solution with what is known:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="o">..+</span><span class="n">c</span>
+</pre></div>
+</div>
+<p>Last one for the road.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Match</span> <span class="nb">all</span> <span class="n">strings</span> <span class="n">starting</span> <span class="k">with</span> <span class="n">a</span> <span class="n">capital</span> <span class="n">letter</span><span class="p">,</span> <span class="n">ending</span> <span class="k">with</span> <span class="n">an</span> <span class="n">s</span> <span class="ow">and</span> <span class="k">for</span> <span class="n">which</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">other</span> <span class="n">letters</span> <span class="n">are</span> <span class="ow">in</span> <span class="n">lowercase</span>
+</pre></div>
+</div>
+<p>Solution:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">A</span><span class="o">-</span><span class="n">Z</span><span class="p">][</span><span class="n">a</span><span class="o">-</span><span class="n">z</span><span class="p">]</span><span class="o">*</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>Let’s look at a few more special characters before diving in to some Python</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">\s</label><div class="tab-content docutils">
+<p>Pretty basic, it represents a space character.</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">\w and \W</label><div class="tab-content docutils">
+<p>\w represents all the characters in <cite>[a-zA-Z0-9_]</cite>. It is called a word character. \W is the complementary of \w</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--3" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--3">\b</label><div class="tab-content docutils">
+<p>This is a zero width representing the boundary of a word (string composed only of \w characters).</p>
+</div>
+<input class="tab-input" id="tab-set--1-input--4" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--4">\d</label><div class="tab-content docutils">
+<p>This matches any digits.</p>
+</div>
+</div>
+<p>Let’s give a few more examples.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Match</span> <span class="nb">all</span> <span class="n">the</span> <span class="n">strings</span> <span class="n">composed</span> <span class="n">of</span> <span class="n">two</span> <span class="n">words</span>
+</pre></div>
+</div>
+<p>Solution:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>\<span class="n">w</span><span class="o">+</span>\<span class="n">s</span>\<span class="n">w</span><span class="o">+</span>
+</pre></div>
+</div>
+<p>And another one:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Match</span> <span class="n">strings</span> <span class="n">containing</span> <span class="n">at</span> <span class="n">least</span> <span class="n">one</span> <span class="n">digit</span>
+</pre></div>
+</div>
+<p>Solution</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">.*</span>\<span class="n">d</span><span class="o">.*</span>
+</pre></div>
+</div>
+<p>Let’s now give a brief presentation of how regex can be used in the re python package.</p>
+<p>re is a package containing a lot of different useful functions. We have already seen the sub functions, but it is not the only one!</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">re.findall</label><div class="tab-content docutils">
+<p>This function returns all the matches in a provided string, scanned from left to right (according to the documentation).</p>
+</div>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">re.search</label><div class="tab-content docutils">
+<p>This function returns a match anywhere in the string</p>
+</div>
+<input class="tab-input" id="tab-set--2-input--3" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--3">re.sub</label><div class="tab-content docutils">
+<p>Subs the matched string with another string passed as an argument.</p>
+</div>
+</div>
+<p>Let’s give some examples of these before going deeper into regex syntax.</p>
+<p>Suppose we have the following Python string:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Hello from Toulouse and Barcelona&quot;</span>
+</pre></div>
+</div>
+<p>Let’s say we want to extract all the words which contain at least one “o”.</p>
+<p>We would use re.findall:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\w*o\w*&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span> <span class="c1"># returns a list of all the non overlapping matches from left to right</span>
+<span class="c1"># Returns: [&#39;Hello&#39;, &#39;from&#39;, &#39;Toulouse&#39;, &#39;Barcelona&#39;]</span>
+</pre></div>
+</div>
+<p>Now if we do the same using re.search:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\w*o\w*&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">()</span>
+<span class="c1"># Returns: &#39;Hello&#39;</span>
+</pre></div>
+</div>
+<p>Now suppose we want to remove the Barcelona part and replace it with Paris:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Barcelona&quot;</span><span class="p">,</span> <span class="s2">&quot;Paris&quot;</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+<span class="c1"># Returns &quot;Hello from Toulouse and Paris&quot;</span>
+</pre></div>
+</div>
+<p>The search returns only the first match, and we use the group method to access the actual match.</p>
+<p>Before diving in to some more python, let’s look at some features of Perl’s implementation of regex which allow
+what we call lookahead and lookbehind, which are very powerful. Note that these will make a lot more sense when we will
+combine them with the python functions in the re package.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">Positive/Negative lookahead</label><div class="tab-content docutils">
+<p>The positive regex lookahead allows the engine to match certain part of a string which are followed by certain characters.
+It is written :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="err">?</span><span class="o">=&lt;</span><span class="n">regex_expression</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example, <cite>a(?=;)</cite> will match all “a” strings which are followed by “;”.</p>
+<p>The negative lookahead is very similar, it is written:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="err">?!</span><span class="o">&lt;</span><span class="n">regex_expression</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example, <cite>a(?!;)</cite> will match all “a” which are <strong>not</strong> followed by “;”.</p>
+<p>Note that the term used here in the positive/negative lookahead is an actual regex expression: we can pass any kind
+of regex expression (so not necessarily of fixed width, unlike the lookbehind).</p>
+</div>
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">Positive/negative lookbehind</label><div class="tab-content docutils">
+<p>The positive lookbehind allows to match certain part of a string which are preceded by certain characters.
+It is written:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(?&lt;=&lt;regex_expression&gt;)
+</pre></div>
+</div>
+<p>For example, <cite>(?&lt;=A)b</cite> will match all the “b” for which the previous letter was an “A”.</p>
+<p>The negative lookbehind is very similar. Here is the syntax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(?&lt;!&lt;regex_expression&gt;)
+</pre></div>
+</div>
+<p>For example, <cite>(?&lt;!A)b</cite> will match all the “b” for which the previous letter was <strong>not</strong> an “A”.</p>
+<p>Note that unlike the regex lookahead, the regex expression in the lookbehind must be of fixed length.</p>
+</div>
+</div>
+<p>Now that we have some very solid tools for regex, let’s do a few examples using Python, and a little problem to summarize a lot of what we have seen.</p>
+<p>Suppose have the following string:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;test.sas, test2.txt, test3.sas, test4.py&quot;</span>
+</pre></div>
+</div>
+<p>Our goal is to extract all the files for which the extension is “.sas” (but without the extension). To do this, we can do the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^\.,]+(?=\.sas)&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now suppose we want to extract all the file extensions. In our case, we can do the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;=\.)[^\s\.]+(?=,)&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Of course, if we were in the more general case, we would have to make the functions above a lot more robust, but it is still a nice example.</p>
+<p>Now that we are starting to have a nice understanding, let’s dive into a little problem.</p>
+<p>Suppose we have the following string:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="si">%le</span><span class="s2">t a=2023; </span><span class="si">%le</span><span class="s2">t b=2022 * 1;/*this is the end of the variables</span>
+<span class="s2"> </span><span class="se">\n</span><span class="s2">definition */ LIBNAME test </span><span class="se">\&quot;</span><span class="s2">/path/to/test</span><span class="se">\&quot;</span><span class="s2">; * test FILENAME;</span>
+<span class="s2"> data test.test&amp;a; SET test.test_file;&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>This is an extract of a basic SAS code which we could want to do some parsing on. It is also very convenient to use
+in order to show some examples.</p>
+<p>We will often say “SAS line”. This refers to any bit of code which are contained between a “;” and another “;” or between a line start and a “;”. In the example above,
+“%let a=2023;” and “%let b=2022 * 1;” are both distinct SAS lines.</p>
+<p>Suppose we have the following goal: we want to write a Python script that extracts the absolute paths to the inputs and outputs of this SAS code.
+In this case, we have</p>
+<ul class="simple">
+<li><p>One input, “test.test_file” (which comes right after the SET), which should be resolved to “path/to/test/test_file” (the part before the “.” corresponds to the LIBNAME defined before, and we concatenated it with the part after the “.”)</p></li>
+<li><p>One output, “test.test&amp;a” (which comes right after the DATA), which after some basic parsing, should be resolved to “path/to/test/test2023” (&amp;a is a reference to the variable a which was defined earlier)</p></li>
+</ul>
+<p>In order to do this, we need to perform the following tasks:</p>
+<ol class="arabic simple">
+<li><p>Extract all the variables in this script and store them in a sort of dictionnary to be used later on (variables are defined using a %let macro statement)</p></li>
+<li><p>Extract all the LIBNAMEs in the same manner (in our example, test would be the name of the LIBNAME and the /path/to/test would be the associated value)</p></li>
+<li><p>Extracts the keywords associated to the inputs/outputs (so in our case )</p></li>
+<li><p>Recreate the actual abspaths</p></li>
+</ol>
+<p>No worries, all these different tasks have an expected output each time so you can better understand what is expected</p>
+<p>Note that the script also contains comments, which come in two forms:</p>
+<ul class="simple">
+<li><p>Line comments (* right after a “;” or at the beginning of a new line and ending with ;). In our example, we have a line comment (”* test filename;” needs to be removed), and an actual multiplication, which needs to be kept</p></li>
+<li><p>Block comments (between \* and *\)</p></li>
+</ul>
+<p>Feel free to give it a go on your own!</p>
+<p><strong>0. Comments removal</strong></p>
+<p>Having “text” as the input, the expected output would be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;</span><span class="si">%le</span><span class="s1">t a=2023; </span><span class="si">%le</span><span class="s1">t b=2022 * 1; LIBNAME test &quot;/path/to/test&quot;; </span><span class="se">\n</span><span class="s1">     data test.test&amp;a; SET test.test_file;&#39;</span>
+</pre></div>
+</div>
+<p>Let’s start by removing the comments. Let’s first start with the block comments, which are the easiest.</p>
+<p>We can do the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sas_code</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/\*(.|\n)*\*/&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For the line comments, it is a bit trickier, since the multiplication in SAS also uses the * symbol. As said earlier, the line comments
+are identifed by * either at the beginning of a new line or by * right after a “;” and possibily a few whitespaces. We therefore have the following
+rule:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sas_code</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;((?&lt;=^)|(?&lt;=;))(\s)*\*[^;]*;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sas_code</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, we:</p>
+<ul class="simple">
+<li><p>Look behind to see if we are at the beginning of a new line (^ or ;)</p></li>
+<li><p>Take into account all the possible whitespaces that may come before our *</p></li>
+<li><p>Check if after all of that, we do actually have a *</p></li>
+<li><p>Extract anything that may come after until the next ;</p></li>
+</ul>
+<p>Nice! With both of these combined, we can fully remove all the comments from the code. Next, let’s extract the variables, again using
+some regex.</p>
+<p><strong>1. Variable extraction</strong></p>
+<p>Here is the expected output:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="s1">&#39;2023&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;2022 * 1&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The input would be the sas_code variable defined above.</p>
+<p>We want to extract all the SAS lines which have a %let, and then get the associated variable mapping. To do the %let SAS line
+extraction, we can use the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">let_args_list</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;=</span><span class="si">%le</span><span class="s2">t)[^;]+(?=;)&quot;</span><span class="p">,</span> <span class="n">sas_code</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After, using some basic python string methods, we can get our variable mapping:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">variable_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">let_arg</span> <span class="ow">in</span> <span class="n">let_args_list</span><span class="p">:</span>
+    <span class="n">var_name</span><span class="p">,</span> <span class="n">var_val</span> <span class="o">=</span> <span class="n">let_arg</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+    <span class="n">variable_mapping</span><span class="p">[</span><span class="n">var_name</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">var_val</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Nice! Sure, we haven’t actually evaluated the value of b, but this goes out of the scope of this tutorial.</p>
+<p>Having done this</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mongodb.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">NoSQL databases with MongoDB</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../c%2B%2B/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">C++ documentation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-regex-where-are-they-used-and-what-are-their-limits">1. What is a regex, where are they used and what are their limits</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-actually-happens-when-you-try-to-match-a-regex-in-a-string">2. What actually happens when you try to match a regex in a string?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regex-syntax-and-applications-in-python">3. Regex syntax and applications in Python</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../../_sources/src/python/regex.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
